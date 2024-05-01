@@ -1,4 +1,4 @@
-from database import add_movie, get_movies, watch_movie, get_watched_movies
+from database import add_movie, get_movies, watch_movie, get_watched_movies, close_connection, add_user
 import datetime
 
 print("Welcome to the watchlist app!\n")
@@ -16,11 +16,13 @@ menu = '''Please select one of the following options:
 Your selection: '''
 
 def prompt(selection):
-    title = input("Enter the movie title: ")
     if selection == 4:
-        watch_movie(title)
+        watcher = input("Enter the watcher name: ")
+        movie_id = input("Enter the MovieID: ")
+        watch_movie(watcher, movie_id)
         return "Watch status updated!\n"
     else:
+        title = input("Enter the movie title: ")
         release_date = input("Enter the release date(dd-mm-yyyy): ")
         #convert date string into a datetime object:
         date_object = datetime.datetime.strptime(release_date, "%d-%m-%Y")
@@ -31,17 +33,23 @@ def prompt(selection):
 
 def view(movieList):
     print("\nMOVIE WATCHLIST", "---------------------------------------------------\n", sep= "\n")
-    for num, row in enumerate(movieList):
-        date_obj = datetime.datetime.fromtimestamp(row[1])
+    for row in movieList:
+        date_obj = datetime.datetime.fromtimestamp(row[2])
         form_date = date_obj.strftime("%d-%m-%Y")
-        print(f"{num+1}. {row[0]} on  {form_date}\n")
+        print(f"{row[0]}. {row[1]} -  {form_date}\n")
+    print("\n---------------------------------------------------\n")
+
+def view_watched(movieList):
+    print("\nMOVIE WATCHLIST", "---------------------------------------------------\n", sep= "\n")
+    for row in movieList:
+        print(row[0], "-", row[1])
     print("\n---------------------------------------------------\n")
 
 choice = int(input(menu))
 
 while choice:
     if choice == 1:
-        print(prompt())
+        print(prompt(1))
     elif choice == 2:
         view(get_movies(True))
     elif choice == 3:
@@ -49,12 +57,14 @@ while choice:
     elif choice == 4:
         print(prompt(4))
     elif choice == 5:
-        view(get_watched_movies())
+        view_watched(get_watched_movies(input("Enter the name of the watcher: ")))
     elif choice == 6:
-        print("Work in progress. Come back soon!\n")
+        add_user(input("Enter the name of he User: "))
     elif choice == 7:
-        pass
+        break
     else:
         print("Invalid choice. Try again\n")
     
     choice = int(input(menu))
+
+close_connection()
