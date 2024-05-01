@@ -15,9 +15,9 @@ def add_movie(title, timestamp):
 
 # Get the required form of table from the database
 def get_movies(upcoming= False):
-    if upcoming:
+    if upcoming == True:
         timestamp_now = datetime.datetime.today().timestamp()
-        return conn.execute("SELECT * FROM movies WHERE release_timestamp > ?;", (timestamp_now,))
+        return conn.execute("SELECT * FROM movies WHERE (release_timestamp > ?);", (timestamp_now,))
     else:
         return conn.execute("SELECT * FROM movies;")
 
